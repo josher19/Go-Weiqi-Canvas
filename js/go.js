@@ -97,6 +97,7 @@ function or4dir(r,c,fcn,p) {
 /* Change player p's adjacent pieces to BLANK (this removing them) */
 function zap(r, c, p) { 
 	if (p == null) { p = goboard[r][c]; } 
+	if (p == BLANK) return 0;
 	if (isSame(r, c, p)) { goboard[r][c] = BLANK; return 1 + zap(r - 1, c, p) + zap(r + 1, c, p) + zap(r, c - 1, p) + zap(r, c + 1, p); } 
 	return 0; 
 }

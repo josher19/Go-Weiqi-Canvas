@@ -1,0 +1,44 @@
+<!--
+        go.html
+        
+        Copyright 2011 by Joshua S. Weinstein
+        http://josher19.github.com/Go-Weiqi-Canvas/
+        
+		License: http://creativecommons.org/licenses/by/3.0/
+		
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Go Game</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" href="../css/go.css" type="text/css" />
+	
+	<!--[if lt IE 9]>
+	<script src=js/excanvas.min.js></script>
+	<![endif]-->
+	<script type="text/javascript" src="../js/go.js"></script>
+	<script type="text/javascript" src="../js/gocanvas.js"></script>
+</head>
+
+<body>
+
+<canvas height="451" width="451" id="gocanvas"></canvas>
+<p style="margin-top: 0pt; font-style: normal;" class="legend">Moves: <span id="movecount">0</span></p>
+
+<FORM id="go" name="go">
+<FIELDSET>
+<LEGEND ACCESSKEY=P>Next Player:</LEGEND>
+<input type="radio" name="player" value="w" id="white" onclick="return false"><label for="white" class="whiteLabel">White</label>
+<input type="radio" name="player" value="b" id="black" onclick="return false"><label for="black" class="blackLabel">Black</label>
+</FORM>
+
+<script>
+  initGame(document.getElementById('gocanvas'), document.getElementById('movecount'), document.forms.go);
+</script>
+
+</body>
+</html>

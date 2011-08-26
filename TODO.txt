@@ -26,19 +26,19 @@ Represent Go Game:
 		Handicaps
 		Scoring
 
-Dispaly Node Game:
+Display Game:
 	Forms for user input:
 		Player:
 			User Name
-			Color (Black or White)
+			Color (Black or White): go.html
 			Skill Level??
 		Chat
 		Quit Button
 		Timer??
-	Canvas Tag for Displaying Go Game
+	Canvas Tag for Displaying Go Game: gocanvas.js, go.html
 		Click to place piece
 		Confirm button needed ??
-		Use excanvas for IE7 ??
+		Use excanvas for IE7 : js/excanvas.min.js
 		Fallback to HTML or use browser upgrade message/link to IE9 ??
 
 Go Game Server:

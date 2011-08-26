@@ -1,0 +1,23 @@
+body {
+	background: #fff
+	color: #000
+}
+
+label.whiteLabel {
+	border: 3px double black;
+	color: black;
+	background: white;
+}
+
+label.blackLabel {
+	border: 3px double white;
+	color: white;
+	background: black;
+}
+
+label {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
+fieldset { display: inline; }
