@@ -7,7 +7,7 @@ Simple Javascript representation of a Go board:
 				or
 			Code for Node ??
 				or
-			Both: Node for CoffeeScript
+			Both: Node and CoffeeScript (Zappa)
 
 Represent Go Game:
 	Objects:
