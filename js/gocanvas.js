@@ -67,7 +67,7 @@ function getCursorPosition(e) {
 function goOnClick(e) {
 	var cell = getCursorPosition(e);
 
-	var player = ++gMoveCount % 2 ? BLACK : WHITE;
+	var player = gMoveCount % 2 ? BLACK : WHITE;
     return addPiece(cell, player);
 
 }
@@ -95,7 +95,7 @@ function moveToCell(cell) {
 	if ("function" == typeof moveTo) {
 		return moveTo(cell.row, cell.column, cell.color);
 	}
-	return false;
+	return true;
 }
 
 /** Add piece to board */
@@ -111,16 +111,23 @@ function addPiece(cell, color) {
 		log("Illegal Move to " + cell);
 		return false;
 	}
-	moveToCell(cell) && moveAndCapture(cell);
-	gPieces.push(cell);
-	drawBoard();
-	var pnum = (1+gMoveCount) % 2;
+	if (!moveToCell(cell)) { 
+		log("Cannot move to " + cell)
+		return false
+	}
+	// moveAndCapture(cell)
+	gPieces.push(cell) 
+    showUpdatedBoard();
+	//drawBoard()
+	var pnum = (gMoveCount++) % 2;
 	if (document.forms.go && document.forms.go.player) {
 		document.forms.go.player[pnum].checked = true;
 	}
 	return true;
 }
 
+/** Look into other scoring methods */
+function getScore() { return gPieces.map(function(item) { switch(item.color) { case BLACK: return -1; break; case WHITE: return 1; break; default: return 0; break;} }).reduce(function(a,b) {return a+b}); }
 
 function isTheGameOver() {
     return gPassedTwice;
@@ -192,15 +199,7 @@ if (typeof resumeGame != "function") {
 }
 
 function newGame() {
-    gPieces = [new Cell(kBoardHeight - 3, 0),
-	       new Cell(kBoardHeight - 2, 0),
-	       new Cell(kBoardHeight - 1, 0),
-	       new Cell(kBoardHeight - 3, 1),
-	       new Cell(kBoardHeight - 2, 1),
-	       new Cell(kBoardHeight - 1, 1),
-	       new Cell(kBoardHeight - 3, 2),
-	       new Cell(kBoardHeight - 2, 2),
-	       new Cell(kBoardHeight - 1, 2)];
+    gPieces = [];
     gNumPieces = gPieces.length;
     gSelectedPieceIndex = -1;
     gSelectedPieceHasMoved = false;
