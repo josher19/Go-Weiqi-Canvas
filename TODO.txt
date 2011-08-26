@@ -1,0 +1,52 @@
+Simple Javascript representation of a Go board:
+	Started: go.js
+	Simplify Code
+	Wrap in a Go object or JS class
+		Depends on:
+			Recode in CoffeScript ??
+				or
+			Code for Node ??
+				or
+			Both: Node for CoffeeScript
+
+Represent Go Game:
+	Objects:
+		Two active players: White and Black
+		Pieces: White and Black
+		Board Size: 19x19 or 9x9
+	Legal Moves
+		Surrounded pieces
+		Captured Pieces
+			@zap(row,col)
+		Eyes & Covered Eyes
+		Cannot capture own pieces (illegal move)
+		Pass
+	More Advanced:
+		Winning & Quiting
+		Handicaps
+		Scoring
+
+Dispaly Node Game:
+	Forms for user input:
+		Player:
+			User Name
+			Color (Black or White)
+			Skill Level??
+		Chat
+		Quit Button
+		Timer??
+	Canvas Tag for Displaying Go Game
+		Click to place piece
+		Confirm button needed ??
+		Use excanvas for IE7 ??
+		Fallback to HTML or use browser upgrade message/link to IE9 ??
+
+Go Game Server:
+	Seperate Project
+	Use Zappa or other framework
+	Two players (default)
+	Options/Advanced:
+		Viewers for public games 
+		Multiple games per server 
+		Use online Go standards to make interoperable ??
+
