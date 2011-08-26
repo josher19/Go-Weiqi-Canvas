@@ -87,22 +87,31 @@ function isOccupied(cell) {
 
 function illegalmove(cell, color) { return isOccupied(cell); }
 
-function checkCapture(cell, color) { return false; }
+function checkCapture(cell, color, docapture) { return false; }
 
 function updateScore(color, points) { return false; }
 
+function moveToCell(cell) {
+	if ("function" == typeof moveTo) {
+		return moveTo(cell.row, cell.column, cell.color);
+	}
+	return false;
+}
+
+/** Add piece to board */
 function addPiece(cell, color) {
 	cell.color = color;
     log(cell);
 
 	// check for capture or illegal move
-	var points = checkCapture(cell, color);
+	var points = checkCapture(cell, color, true);
 	if (points) {
 		updateScore(color, points);
 	} else if (illegalmove(cell, color)) {
 		log("Illegal Move to " + cell);
 		return false;
 	}
+	moveToCell(cell) && moveAndCapture(cell);
 	gPieces.push(cell);
 	drawBoard();
 	var pnum = (1+gMoveCount) % 2;

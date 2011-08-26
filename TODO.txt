@@ -18,8 +18,10 @@ Represent Go Game:
 		Surrounded pieces
 		Captured Pieces
 			@zap(row,col)
+			@moveAndCapture(cell)
 		Eyes & Covered Eyes
 		Cannot capture own pieces (illegal move)
+			SOON
 		Pass
 	More Advanced:
 		Winning & Quiting
