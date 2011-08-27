@@ -2,7 +2,7 @@ var BLACK='b',
 	WHITE='w',
 	BLANK='_';
 	
-var kBoardSize = kNumRows = kNumCols = 9; // or 19
+var kBoardSize = self.kBoardWidth ? kBoardWidth : 9; // or 19
 
 // function hasEye(r,c) { if (r < 0 || c < 0 || r >= goboard.length ) return false; return goboard[r][c]==BLANK || hasEye(r-1,c) || hasEye(r+1,c) || hasEye(r,c-1) || hasEye(r,c+1) }
 
@@ -38,17 +38,22 @@ function info(msg) { if(self.console && console.info) console.info(msg); }
 
 var eyeBoard=new Board();
 
-function checkNonRec(r,c,p) {
-	return checkIsAlive(addUnique([],r,c), p);
+/** 
+ * Check if group starting at r=row, c=column of p=color is Alive.
+ * If ra is set, save all Blank Spaces in ra using ra.push([row,column]).
+ */
+function checkNonRec(r,c, p,ra) {
+	return checkIsAlive(addUnique([],r,c), p, ra, true);
 }
 
-function addUnique(clist,r,c,p) {
+function addUnique(clist,r,c) {
 	var item = [r,c].join(":");
-	if (clist.indexOf(item) == -1) clist.push(item);
+	if (false==areOutOfBounds(r,c) && clist.indexOf(item) == -1) clist.push(item);
 	return clist;	
 }
 
-function checkIsAlive(clist, p) {
+function checkIsAlive(clist, p, allBlanks, verbose) {
+	var hasABlankSpace = false;
 	for(var i=0; i<clist.length; ++i) {
 		var here=clist[i].split(":");
 		var r=here[0]-0, c=here[1]-0;
@@ -56,10 +61,17 @@ function checkIsAlive(clist, p) {
 			info("edge");
 			// next;
 		} else {
-			p= p || here[2] || goboard[r][c];
+			p= p || goboard[r][c];
 			info(["checkIsAlive", r, c, p, goboard[r][c] ]);
-			if (isBlank(r,c,p)) return true; // Blank == Alive, jump out
-			if (isSame(r, c, p)) {
+			var isEmpty = isBlank(r,c,p)
+			if (isEmpty) {
+				if (!allBlanks) return true; // Blank == Alive, jump out
+				++hasABlankSpace; // convert to number
+				info(["Found", hasABlankSpace, "empty spaces"].join(" "));
+				if (allBlanks.push) { allBlanks.push([r,c]); };
+				if (!verbose) isEmpty = false;
+			} 
+			if (isSame(r, c, p) || isEmpty) {
 				addUnique(clist,r-1,c  );
 				addUnique(clist,r  ,c-1);
 				addUnique(clist,r+1,c  );
@@ -69,8 +81,8 @@ function checkIsAlive(clist, p) {
 		}
 		
 	} // end loop
-	info("False, checked: " + [i,clist.length]);
-	return false;
+	info(hasABlankSpace + ", checked: " + [i,clist.length]);
+	return hasABlankSpace;
 }
 
 /* instead of recursive, could make a list of pieces in the group */
@@ -173,7 +185,7 @@ function moveTo(row,col,color) {
 	return true;
 }
 
-// function findCaptures(r, c) { return add4dir(r, c, checkEyes) ; }
+//~ function findCaptures(r, c) { return add4dir(r, c, checkEyes) ; }
 
 function checkEyes(r, c, p) { return doCheckAlive(r, c, p) || zap(r, c, p); }
 
@@ -198,18 +210,28 @@ function getColor(r, c) { return goboard[r] && goboard[r][c]; }
 
 function same4(r,c) { var r=uniq(get4dir(r,c,getColor).filter( function(item,ndx) { return item})); return [ r.length ==1 && r[0] != BLANK, r]; }
 
-/** Update pieces on the canvas */
-
 function otherPlayer(p) { return p === WHITE ? BLACK : p === BLACK ? WHITE : p }
 
 function findCaptures(r, c, p) { return get4dir(r, c, checkEyes, otherPlayer(p)); }
 
+/** Boundary based on board size */
+
+function isOutOfBounds(n) { return n < 0 || n >= kBoardSize; }
+
+function areOutOfBounds(/*vargs...*/) { 
+	for(var i=0; i<arguments.length; ++i) {
+		n = arguments[i];
+		if (n < 0 || n >= kBoardSize) return true;; 
+	}
+	return false;
+}
+
+/** Update pieces on the canvas */
+
 function updateBoard() { return gPieces.filter(function (p) {return !isBlank(p.row, p.column);}); }
 
-// function showUpdatedBoard(r, c, p) { if (findCaptures(r, c, p)) { gPieces = updateBoard(gPieces); drawBoard(); } }
+//~ function showUpdatedBoard(r, c, p) { if (findCaptures(r, c, p)) { gPieces = updateBoard(gPieces); drawBoard(); } }
 
 function showUpdatedBoard() { gPieces = updateBoard(gPieces); drawBoard(); }
 
-// function moveAndCapture(cell) { showUpdatedBoard(cell.row,cell.column,cell.color); }
-
-function isOutOfBounds(n) { return n < 0 || n >= kBoardSize; }
+//~ function moveAndCapture(cell) { showUpdatedBoard(cell.row,cell.column,cell.color); }

@@ -1,3 +1,6 @@
+BASIC FEATURES
+--------------
+
 Simple Javascript representation of a Go board:
 	Started: go.js
 	Simplify Code
@@ -8,17 +11,31 @@ Simple Javascript representation of a Go board:
 			Code for Node ??
 				or
 			Both: Node and CoffeeScript (Zappa)
+	Use Array (or set) generator/consumer instead of recursion:
+		Add Tests
+		go.js:
+			 @checkNonRec(r,c,p)
+				vs.
+			 @checkRec(r, c, p, fcn)
+		May need to add to Array.prototype for IE:
+			@indexOf
+			@filter
+			@map
+			@reduce
 
 Represent Go Game:
 	Objects:
 		Two active players: White and Black
 		Pieces: White and Black
-		Board Size: 19x19 or 9x9
+		Board Size: 
+			19x19: TODO
+			9x9: DONE
 	Legal Moves
 		Surrounded pieces
 		Captured Pieces
 			@zap(row,col)
-			@moveAndCapture(cell)
+			@moveAndCapture(cell): deleted
+			@findCaptures(r, c, p) and @canCapture(r,c,p)
 		Eyes & Covered Eyes
 		Cannot capture own pieces (illegal move)
 			SOON
@@ -42,9 +59,16 @@ Display Game:
 		Confirm button needed ??
 		Use excanvas for IE7 : js/excanvas.min.js
 		Fallback to HTML or use browser upgrade message/link to IE9 ??
+		Grid Lines: 
+			Middle line instead of border lines
+				Click on crossroads instead of center of square
+
+
+ADVANCED FEATURES
+--------------
 
 Go Game Server:
-	Seperate Project
+	Separate Project
 	Use Zappa or other framework
 	Two players (default)
 	Options/Advanced:
@@ -52,3 +76,22 @@ Go Game Server:
 		Multiple games per server 
 		Use online Go standards to make interoperable ??
 
+AI:
+	Known as a Hard Problem in Artificial Intelligence circles
+	Much more difficult than Chess become much more positions
+	Probably requires specific and general pattern recognition
+	Look at:
+		Surreal Numbers
+		Neural Nets
+		Fuzzy Logic
+		Pattern Recognitions
+		Visual/2d Pattern Recognitions
+	Look for expert help:
+		Expert AI Programmers
+		Go Masters
+
+Mobile Version:
+	Wrap in WebView
+	Gestures & buttons
+		Easily Zoom in & Out
+		See see last move

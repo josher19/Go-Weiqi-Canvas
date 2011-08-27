@@ -109,6 +109,7 @@ function addPiece(cell, color) {
 		updateScore(color, points);
 	} else if (illegalmove(cell, color)) {
 		log("Illegal Move to " + cell);
+		warn("Illegal Move to " + cell);
 		return false;
 	}
 	if (!moveToCell(cell)) { 
