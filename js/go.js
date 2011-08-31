@@ -4,6 +4,8 @@ var BLACK='b',
 	
 var kBoardSize = self.kBoardWidth ? kBoardWidth : 9; // or 19
 
+GO = {}
+
 // function hasEye(r,c) { if (r < 0 || c < 0 || r >= goboard.length ) return false; return goboard[r][c]==BLANK || hasEye(r-1,c) || hasEye(r+1,c) || hasEye(r,c-1) || hasEye(r,c+1) }
 
 function Board() {
@@ -19,6 +21,17 @@ function Board() {
 
 /* var */
 goboard = new Board();
+
+function Player(color) {
+	this.color = color;
+	this.captured = 0;
+}
+
+var blackPlayer = new Player(BLACK),
+	whitePlayer = new Player(WHITE);
+
+var players = [blackPlayer, whitePlayer];
+var viewers = []; // stub for game viewers
 
 function isBlank(r, c) { return goboard[r] && goboard[r][c] == BLANK; }
 
@@ -129,14 +142,26 @@ function doCheckAlive(r, c, p) {
 	return checkRec(r, c, p); 
 }
 
+/** 
+ * Check if group (containing stone of color p at row r and column c) 
+ * contains any Liberties. Return True if dead (no liberties).
+ */ 
+function doCheckDead(r,c,p) {
+	if (false && doCheckAlive(r, c, p) != checkNonRec(r,c,p)) {
+		alert("checkNonRec failed at " + [r,c,p]);
+	}
+	return !checkNonRec(r,c,p);
+}
+
 function showBoard(board) { return board.join("\n"); }
 
 /* create randome board and zap items without eyes */
 
-function walker(fcn, board, args) {
+function walker(fcn, board, args, logger) {
+	if (null == logger) logger = log;
     for (var r = 0; r < board.length; ++r) {
         for (var c = 0; c < board.length; ++c) {
-            log( fcn(r, c, args) );
+            logger( fcn(r, c, args) );
         }
     }
 }
@@ -149,7 +174,8 @@ function or4dir(r,c,fcn,p) {
 	return fcn(r - 1, c, p) || fcn(r + 1, c, p) || fcn(r, c - 1, p) || fcn(r, c + 1, p);
 }
 
-/* Change player p's adjacent pieces to BLANK (thus removing them) */
+// TODO: Record Captures in Player.captures
+/** Change player p's adjacent pieces to BLANK (thus removing them) */
 function zap(r, c, p) { 
 	if (isOutOfBounds(r) || isOutOfBounds(c)) return false;
 	if (p == null) { p = goboard[r][c]; } 
@@ -170,7 +196,7 @@ function warn(msg) {
 function canCapture(r,c,p) { return findCaptures(r,c,p).filter(function(item) { return typeof item == "number" && item > 0}).length > 0 }
 
 /* Move to row, col by player */
-function moveTo(row,col,color) {
+GO.moveTo = function moveTo(row,col,color) {
 	if (null == goboard) { goboard = new Board(); }
 	if (null == goboard[row] || goboard[row][col] != BLANK) { return false; }
 	goboard[row][col]=color;
@@ -182,10 +208,13 @@ function moveTo(row,col,color) {
 		return false;
 	}
 	// warn("");
+	GO.getRecorder().moveTo(row,col,color);
 	return true;
 }
 
 //~ function findCaptures(r, c) { return add4dir(r, c, checkEyes) ; }
+
+function countCaptures(r,c,p) { return doCheckDead(r,c,p) && zap(r,c,p); }
 
 function checkEyes(r, c, p) { return doCheckAlive(r, c, p) || zap(r, c, p); }
 
@@ -238,7 +267,57 @@ function showUpdatedBoard() { gPieces = updateBoard(gPieces); drawBoard(); }
 
 function updateStones() { gPieces = updateBoard(gPieces); }
 
-/** Record Moves */
-function recordMove(r,c,p) { return String(p).toUpperCase() + "[" + numToLetter(r) + numToLetter(c) + "]"; }
+function getCoveredEyes() {
+	var ra = []; 
+	var more = function(item) { ra.push(item); }
+	walker(same4,goboard,null,more)
+	return ra.map(function(item) { if (item[0]) return item[1][0];  }).filter(function(item) {return item});
+}
 
-function numToLetter(n) { return String.fromCharCode(96 + n); }
+/*
+ * Get controlled by (board):
+ *     for each square on board:
+ * 			when BLACK: -1
+ * 			when WHITE: 1
+ * 			when BLANK: 
+ * 				 get Border:
+ * 					when BLACK: -1
+ * 					when WHITE: 1
+ * 					MIXED: 0
+ * 
+ * get Border(row, col, p):
+ * 		return  getGroupBorder(row,col,p || BLANK)
+ * 
+ * get Group Border (row,col,p):
+ * 		add 4 directions to group
+ * 		for each item in group:
+ * 			if (item.color == p): // if color same as group: 
+ * 				add 4 directions unless already on list
+ * 			else:
+ * 				add [row,col,p] to border
+ * 		return {group, border}
+ * 
+ */
+
+/** Record Moves */
+function Recorder(elem,header,displayFnc) {
+
+	this.displayArea = elem;
+	this.hist = [];
+	this.header = header || '';
+	if (displayFnc) this.display = displayFunc; // @overwrite
+
+}
+	
+Recorder.prototype = {
+	/** Record and display a move in SGF format */
+	moveTo : function recordMove(r,c,p) { var m=this.sgfMove(r,c,p); this.hist.push(m); this.display(m); return m; }
+	, display: function display() { if (this.displayArea) this.displayArea.innerHTML = this.header + this.hist.join("\n;"); return this.displayArea; }
+	, sgfMove : function sgfMove(r,c,p) { return String(p).toUpperCase() + "[" + this.numToLetter(r) + this.numToLetter(c) + "]"; }
+	, numToLetter : function numToLetter(n) { return String.fromCharCode(97 + n); }
+}
+
+GO.getRecorder = function getRecorder() {
+	if (!GO.recorder) GO.recorder = new Recorder(document.getElementById('displayMoves'), '');
+	return GO.recorder;
+}

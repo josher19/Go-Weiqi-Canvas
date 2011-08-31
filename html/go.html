@@ -39,10 +39,17 @@
 <input type="radio" name="player" value="w" id="white" onclick="return false" /><label for="white" class="whiteLabel">White</label>
 <input type="radio" name="player" value="b" id="black" onclick="return false" /><label for="black" class="blackLabel">Black</label>
 </FIELDSET>
+<br />
+<input type="checkbox" title="show SGF logs" name="enableLogs" id="enableLogs" checked="checked" />
+<div id="displayMoves"></div>
 </FORM>
 
 <script>
   initGame(document.getElementById('gocanvas'), document.getElementById('movecount'), document.forms.go);
+  document.forms.go.enableLogs.onclick = function(ev) {
+	 var dm=document.getElementById('displayMoves'); 
+	 if (dm) dm.style.display = this.checked ? '' : 'none';
+  }
 </script>
 
 </body>

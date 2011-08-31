@@ -93,8 +93,8 @@ function checkCapture(cell, color, docapture) { return false; }
 function updateScore(color, points) { return false; }
 
 function moveToCell(cell) {
-	if ("function" == typeof moveTo) {
-		return moveTo(cell.row, cell.column, cell.color);
+	if (typeof GO != "undefined" && GO && "function" == typeof GO.moveTo) {
+		return GO.moveTo(cell.row, cell.column, cell.color);
 	}
 	return true;
 }
@@ -129,6 +129,7 @@ function nextPlayer() {
     gPieces = updateBoard(gPieces);
 	drawBoard()
 	var pnum = (gMoveCount++) % 2;
+	if ("undefined" != typeof players && players) curPlayer = players[pnum];
 	if (document.forms.go && document.forms.go.player) {
 		document.forms.go.player[pnum].checked = true;
 	}
