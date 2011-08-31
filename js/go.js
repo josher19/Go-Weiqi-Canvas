@@ -235,3 +235,10 @@ function updateBoard() { return gPieces.filter(function (p) {return !isBlank(p.r
 function showUpdatedBoard() { gPieces = updateBoard(gPieces); drawBoard(); }
 
 //~ function moveAndCapture(cell) { showUpdatedBoard(cell.row,cell.column,cell.color); }
+
+function updateStones() { gPieces = updateBoard(gPieces); }
+
+/** Record Moves */
+function recordMove(r,c,p) { return String(p).toUpperCase() + "[" + numToLetter(r) + numToLetter(c) + "]"; }
+
+function numToLetter(n) { return String.fromCharCode(96 + n); }

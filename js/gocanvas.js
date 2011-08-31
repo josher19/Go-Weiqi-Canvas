@@ -30,7 +30,8 @@ var gMoveCount;
 var gMoveCountElem;
 var gGameInProgress;
 
-var gPassedTwice = false;
+var gPassedCount = 0; // Two Passes => Quit
+var gResigned = false;
 
 function Cell(row, column, color) {
     this.row = row;
@@ -118,23 +119,36 @@ function addPiece(cell, color) {
 	}
 	// moveAndCapture(cell)
 	gPieces.push(cell) 
-    showUpdatedBoard();
-	//drawBoard()
+	nextPlayer()
+    //showUpdatedBoard();
+	return true;
+}
+
+/** Next Player's Turn */
+function nextPlayer() {
+    gPieces = updateBoard(gPieces);
+	drawBoard()
 	var pnum = (gMoveCount++) % 2;
 	if (document.forms.go && document.forms.go.player) {
 		document.forms.go.player[pnum].checked = true;
 	}
-	return true;
 }
 
-/** Look into other scoring methods */
+/** TODO: Look into other scoring methods, eye or captured pieces count */
 function getScore() { return gPieces.map(function(item) { switch(item.color) { case BLACK: return -1; break; case WHITE: return 1; break; default: return 0; break;} }).reduce(function(a,b) {return a+b}); }
 
 function isTheGameOver() {
-    return gPassedTwice;
+    return gPassedCount >= 2 || gResigned;
 }
 function isBlack(piece) {
 	return piece.color == BLACK;
+}
+
+/** Button Click Events for the Form */
+function initForm(frm) {
+	if (frm.confirm) frm.confirm.onclick = function(ev) {gPassedCount = 0;}
+	if (frm.pass) frm.pass.onclick = function(ev) {++gPassedCount;info("pass");nextPlayer();}
+	if (frm.resign) frm.resign.onclick = function(ev) {gResigned = true}
 }
 
 // draw board
@@ -212,12 +226,13 @@ function newGame() {
 function endGame() {
     gSelectedPieceIndex = -1;
     gGameInProgress = false;
+    info("The game is over");
 }
 
-function initGame(canvasElement, moveCountElement) {
+function initGame(canvasElement, moveCountElement, frm) {
     if (!canvasElement) {
         canvasElement = document.createElement("canvas");
-	canvasElement.id = "halma_canvas";
+	canvasElement.id = "gocanvas";
 	document.body.appendChild(canvasElement);
     }
     if (!moveCountElement) {
@@ -230,6 +245,7 @@ function initGame(canvasElement, moveCountElement) {
     gCanvasElement.addEventListener("click", goOnClick, false);
     gMoveCountElem = moveCountElement;
     gDrawingContext = gCanvasElement.getContext("2d");
+    initForm(frm);
     if (!resumeGame()) {
 	newGame();
     }
