@@ -1,0 +1,16 @@
+Moves:
+W[gd] ;B[hd] ;W[he] ;B[gb] ;W[hc] ;B[gc] ;W[ge] ;B[hf] ;W[gf] ;B[ie] ;W[fd] ;B[ed] ;W[ee] ;B[de] ;W[ef] ;B[eg] ;W[df] ;B[cf] ;W[dg] ;B[cg] ;W[dh] ;B[fg] ;W[eh] ;B[gg] ;W[hg] ;B[if] ;W[id] ;B[ig] ;W[ih] ;B[fc] ;W[cd] ;B[ce] ;W[dd] ;B[ec] ;W[dc] ;B[db] ;W[be] ;B[bd] ;W[bc] ;B[cc] ;W[ad] ;B[cd] ;W[cb] ;B[bb] ;W[ba] ;B[ac] ;W[da] ;B[ea] ;W[eb] ;B[ca] ;W[di] ;B[ch] ;W[ae] ;B[bf] ;W[fh] ;B[af] ;W[gh] ;B[aa] ;W[ff] ;B[fb] ;W[hb] ;B[ha] ;W[ib] ;B[ga] ;W[ia] ;B[ci] ;W[bi] ;B[bh] ;W[ai] ;B[ah]
+
+
+Final board:
+b,b,_,b,b,_,b,_,_
+_,b,b,_,b,_,b,_,_
+b,b,w,b,_,_,b,_,_
+b,w,w,w,b,b,_,_,_
+w,_,w,_,w,b,_,b,b
+_,w,_,w,w,b,b,w,w
+w,_,w,w,b,b,w,w,_
+_,w,w,b,_,b,w,_,w
+w,_,w,b,_,b,b,w,_
+
+Final Score: -4 means Black wins by 4 (incorrect, does not include Eyes/Captures)
