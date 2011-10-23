@@ -6,4 +6,4 @@ Check back later.
 
 Read TODO.txt if you would like to join the project.
 
-[http://josher19.github.com/Go-Weiqi-Canvas/|Go Weiqi Canvas]
+http://josher19.github.com/Go-Weiqi-Canvas/
