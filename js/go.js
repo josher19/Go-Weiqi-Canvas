@@ -98,6 +98,53 @@ function checkIsAlive(clist, p, allBlanks, verbose) {
 	return hasABlankSpace;
 }
 
+function toScore(score,color) {
+	return color == BLACK ? -score : color == WHITE ? score : 0.5;
+}
+
+
+var scoreboard = new Board();
+function getEyeCount(row,col,p) {
+	// var start=p || BLANK;
+	var edge;
+	var score = 0, r, c;
+	var clist = [row+":"+col];	
+	for(var i=0; i<clist.length; ++i) {
+		var here=clist[i].split(":");
+		r=here[0]-0, c=here[1]-0;		
+		if (isOutOfBounds(r) || isOutOfBounds(c)) {
+			info("edge");
+			// next;
+		} else {
+			var stone = goboard[r][c];
+			p= p || stone;
+			info(["getEyeCount", r, c, p,  stone]);
+			var isEmpty = isBlank(r,c,p);
+			if (/* isSame(r, c, p) || */ isEmpty && BLANK == scoreboard[r][c]) {
+				++score;
+				scoreboard[r][c] = 0; // toScore(1,edge);
+				addUnique(clist,r-1,c  );
+				addUnique(clist,r  ,c-1);
+				addUnique(clist,r+1,c  );
+				addUnique(clist,r  ,c+1);
+				info(clist.length);
+			} else {
+				if (edge && stone != edge) { // Two Colors
+					return scoreboard[r][c]=score=0;
+				}
+				edge = stone;
+				scoreboard[r][c]=toScore(1,stone);
+			}
+		}
+		
+	} // end loop
+	// could cache clist results
+	info('score: ' + score + ', color: ' + edge + ', list: ' + clist);
+	if (scoreboard[row]) scoreboard[row][col]=toScore(score,edge);
+	//log('r=' + r + ', c=' + c);
+	return scoreboard; // toScore(score,edge);
+}
+
 /* instead of recursive, could make a list of pieces in the group */
 function checkRec(r, c, p, fcn) {
     if (null == fcn) {
