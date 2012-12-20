@@ -164,15 +164,16 @@ function drawBoard() {
     gDrawingContext.beginPath();
     
     /* vertical lines */
-    for (var x = 0; x <= kPixelWidth; x += kPieceWidth) {
-	gDrawingContext.moveTo(0.5 + x, 0);
-	gDrawingContext.lineTo(0.5 + x, kPixelHeight);
+    var startpx = kPieceWidth / 2;
+    for (var x = startpx; x <= kPixelWidth; x += kPieceWidth) {
+	gDrawingContext.moveTo(0.5 + x, startpx);
+	gDrawingContext.lineTo(0.5 + x, kPixelHeight - startpx);
     }
     
     /* horizontal lines */
-    for (var y = 0; y <= kPixelHeight; y += kPieceHeight) {
-	gDrawingContext.moveTo(0, 0.5 + y);
-	gDrawingContext.lineTo(kPixelWidth, 0.5 +  y);
+    for (var y = startpx; y <= kPixelHeight; y += kPieceHeight) {
+	gDrawingContext.moveTo(startpx, 0.5 + y);
+	gDrawingContext.lineTo(kPixelWidth - startpx, 0.5 +  y);
     }
     
     /* draw it! */
@@ -194,15 +195,17 @@ function drawPiece(p, selected) {
     var x = (column * kPieceWidth) + (kPieceWidth/2);
     var y = (row * kPieceHeight) + (kPieceHeight/2);
     var radius = (kPieceWidth/2) - (kPieceWidth/10);
+    gDrawingContext.strokeStyle = "#000";
+    gDrawingContext.strokeWidth = 4;
     gDrawingContext.beginPath();
     gDrawingContext.arc(x, y, radius, 0, Math.PI*2, false);
     gDrawingContext.closePath();
-    gDrawingContext.strokeStyle = "#000";
     gDrawingContext.stroke();
+    gDrawingContext.fillStyle = "#fff";
     if (selected) {
 	gDrawingContext.fillStyle = "#000";
-	gDrawingContext.fill();
     }
+    gDrawingContext.fill();
 }
 
 if (typeof resumeGame != "function") {

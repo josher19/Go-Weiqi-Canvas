@@ -1,6 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <!--
         go.html
@@ -40,8 +39,8 @@
 <input type="radio" name="player" value="b" id="black" onclick="return false" /><label for="black" class="blackLabel">Black</label>
 </FIELDSET>
 <br />
-<input type="checkbox" title="show SGF logs" name="enableLogs" id="enableLogs" checked="checked" />
-<div id="displayMoves"></div>
+<label>Show SGF logs: <input type="checkbox" title="show SGF logs" name="enableLogs" id="enableLogs"  /></label>
+<div id="displayMoves" style="display:none"></div>
 </FORM>
 
 <script>
