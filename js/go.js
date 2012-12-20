@@ -19,6 +19,23 @@ function Board() {
     return goboard;
 }
 
+/** resize board to boardsize, copying pieces from goboard */
+function reBoard(boardsize, goboard) {
+	kBoardSize = +boardsize;
+	var bigBoard = new Board();
+	if (goboard)
+		for(var r=0, rmax=Math.min(kBoardSize, goboard.length); r < rmax; r += 1) 
+			for(var c=0; c < rmax; c += 1) 
+				bigBoard[r][c] = goboard[r][c] || BLANK;
+	return bigBoard;
+}
+
+GO.setSize = function(boardsize) { 
+	goboard = reBoard(boardsize); 
+	eyeBoard = new Board();
+	log("Resized board to " + boardsize + "x" + boardsize); 
+}
+
 /* var */
 goboard = new Board();
 
@@ -320,6 +337,8 @@ function getCoveredEyes() {
 	walker(same4,goboard,null,more)
 	return ra.map(function(item) { if (item[0]) return item[1][0];  }).filter(function(item) {return item});
 }
+// inefficient and wrong (ignores eyes instead of counting them 
+// GO.getFinalScore = function() { var score = 0; for(var r=0; r<kBoardSize; r += 1) for(var c=0; c<kBoardSize; c += 1) checkEyes(r,c,WHITE) - checkEyes(r,c,BLACK); }
 
 /*
  * Get controlled by (board):

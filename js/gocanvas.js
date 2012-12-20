@@ -12,7 +12,7 @@
 */
 
 var kBoardWidth = 9;
-var kBoardHeight= 9;
+var kBoardHeight= kBoardWidth;
 var kPieceWidth = 50;
 var kPieceHeight= 50;
 var kPixelWidth = 1 + (kBoardWidth * kPieceWidth);
@@ -32,6 +32,20 @@ var gGameInProgress;
 
 var gPassedCount = 0; // Two Passes => Quit
 var gResigned = false;
+
+function resizeBoard(boardsize) {
+	kBoardWidth = boardsize;
+	kBoardHeight= kBoardWidth;
+	kPieceWidth = 50 + 18 - 2*kBoardWidth; // between 30 for 19x19 and 68 for 5x5
+	kPieceHeight= 50 + 18 - 2*kBoardHeight;
+	kPixelWidth = 1 + (kBoardWidth * kPieceWidth);
+	kPixelHeight= 1 + (kBoardHeight * kPieceHeight);
+	gCanvasElement.width = kPixelWidth
+	gCanvasElement.height = kPixelHeight;
+	drawBoard();
+	// reset board and other things
+	return boardsize;
+}
 
 function Cell(row, column, color) {
     this.row = row;
@@ -166,14 +180,14 @@ function drawBoard() {
     /* vertical lines */
     var startpx = kPieceWidth / 2;
     for (var x = startpx; x <= kPixelWidth; x += kPieceWidth) {
-	gDrawingContext.moveTo(0.5 + x, startpx);
-	gDrawingContext.lineTo(0.5 + x, kPixelHeight - startpx);
+        gDrawingContext.moveTo(0.5 + x, startpx);
+        gDrawingContext.lineTo(0.5 + x, kPixelHeight - startpx);
     }
     
     /* horizontal lines */
     for (var y = startpx; y <= kPixelHeight; y += kPieceHeight) {
-	gDrawingContext.moveTo(startpx, 0.5 + y);
-	gDrawingContext.lineTo(kPixelWidth - startpx, 0.5 +  y);
+		gDrawingContext.moveTo(startpx, 0.5 + y);
+		gDrawingContext.lineTo(kPixelWidth - startpx, 0.5 +  y);
     }
     
     /* draw it! */
@@ -230,10 +244,24 @@ function newGame() {
 function endGame() {
     gSelectedPieceIndex = -1;
     gGameInProgress = false;
-    info("The game is over");
+    info("The game is over"); // should display prominently, disable parts of UI
+    if (initGame.frm && initGame.frm.boardSize) initGame.frm.boardSize.disabled = false;
+    // initGame.restart();
 }
 
 function initGame(canvasElement, moveCountElement, frm) {
+	initGame.frm = frm;
+	if (frm && frm.boardSize) frm.boardSize.onchange = function(ev) {
+		if (gPieces.length === 0 || gGameInProgress === false) { // first move or game over
+			gPieces.length = 0; // truncate
+			resizeBoard(this.value);
+			GO.setSize(this.value);
+		} else {
+			info("must finish current game");
+			this.value = goboard.length;
+			this.disabled=true;
+		}
+	}
     if (!canvasElement) {
         canvasElement = document.createElement("canvas");
 	canvasElement.id = "gocanvas";

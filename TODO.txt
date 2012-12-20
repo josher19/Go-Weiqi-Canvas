@@ -28,9 +28,10 @@ Represent Go Game:
 		Two active players: White and Black
 		stones: White and Black
 		Board Size: 
+			5x5: DONE
 			9x9: DONE
-			13x13: TODO
-			19x19: TODO
+			13x13: DONE
+			19x19: DONE
 	Legal Moves
 		Surrounded stones
 		Captured stones
@@ -39,9 +40,10 @@ Represent Go Game:
 			@findCaptures(r, c, p) and @canCapture(r,c,p)
 		Eyes & Covered Eyes
 		Cannot capture own stones (illegal move)
-			SOON
+			DONE
 		Pass
 		End game: both players Pass.
+			SOON
 	Go Terms (optional):
 		Chains:  two or more stones of the same color that are placed next to each other (non-diagonally).
 		Liberties: empty space next to a Chain.
@@ -97,15 +99,16 @@ Go Game Server:
 		Use online Go standards to make interoperable ??
 
 AI:
-	Known as a Hard Problem in Artificial Intelligence circles
-	Much more difficult than Chess become much more positions
+	Making a computer be a really good Go player is
+	known as a Hard Problem in Artificial Intelligence circles.
+	Much more difficult than Chess because so many more positions
 	Probably requires specific and general pattern recognition
 	Look at:
 		Surreal Numbers
 		Neural Nets
 		Fuzzy Logic
-		Pattern Recognitions
-		Visual/2d Pattern Recognitions
+		Pattern Recognition
+		Visual/2d Pattern Recognition
 	Look for expert help:
 		Expert AI Programmers
 		Go Masters
