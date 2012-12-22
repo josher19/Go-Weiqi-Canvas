@@ -371,11 +371,16 @@ function getBorder(r,c) { var res = same4(r,c); if (res[0]) return res[1][0]; re
 function visit(r,c,p) { var seen=visit.seen=visit.seen||{}, cnt=visit.cnt=visit.cnt||{}; var here = r + ":" + c; if (!seen[here]) { var clr=getColor(r,c); cnt[clr]=1+(cnt[clr]||0); seen[here]=clr; if (p && clr === p) { get4dir(r,c,visit,p); }} return cnt; }
 visit.reset = function() { visit.seen = {}; visit.cnt = {} }
 visit.start = function (r,c,p) { visit.reset(); return visit(r,c, p || getColor(r,c)); }
-visity.classify = function(r,c) { 
+visit.classify = function(r,c) { 
 	var p = getColor(r,c), v = visit.start(r,c,p);
 	var score = v[p];
-	return {color:p, score:score};
+	var liberties = v[BLANK];
+	var isMixed = v[WHITE] && v[BLACK];
+	var cc = p == BLANK && !isMixed ? (v[WHITE] && WHITE) || (v[BLACK] && BLACK) || p : p;
+	
+	return {color:p, score:score, liberties: liberties, mixed:!!isMixed, control:cc};
 }
+visit.score = function (r,c) { var dd; if (typeof r=="object") dd = r; else dd = visit.classify(r,c); if (dd.color==BLANK || dd.color == dd.control || dd.liberties == 1) return [dd.control, dd.score]; return [dd.color, dd.score]; d}
 // Array.isArray.toString().replace(/\s+/g, "") === "functionisArray(){[nativecode]}"
 if (typeof Array.isArray === "undefined") Array.isArray = function isArray(ra) { return !!(ra && typeof ra.length == "number" && typeof ra.join === "function" && ra.constructor === Array); }
 
