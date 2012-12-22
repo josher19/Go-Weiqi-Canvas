@@ -2,7 +2,7 @@ var BLACK='b',
 	WHITE='w',
 	BLANK='_';
 	
-var kBoardSize = self.kBoardWidth ? kBoardWidth : 9; // or 19
+var kBoardSize = typeof kBoardWidth === "number" ? kBoardWidth : 9; // or 19
 
 GO = {}
 
@@ -19,7 +19,7 @@ function Board() {
     return goboard;
 }
 
-/** resize board to boardsize, copying pieces from goboard */
+/** resize board to boardsize, optionally copying pieces from goboard */
 function reBoard(boardsize, goboard) {
 	kBoardSize = +boardsize;
 	var bigBoard = new Board();
@@ -51,6 +51,7 @@ var players = [blackPlayer, whitePlayer];
 var viewers = []; // stub for game viewers
 
 function isBlank(r, c) { return goboard[r] && goboard[r][c] == BLANK; }
+GO.isBlank = isBlank;
 
 function isSame(r, c, player) { return goboard[r] && goboard[r][c] == player; }
 
@@ -63,8 +64,8 @@ function showBoard(board) {
    return board.join("\n")
 }
 
-function log(msg) { self.Shell && Shell.println(msg, "print"); }
-function info(msg) { if(self.console && console.info) console.info(msg); }
+function log(msg) { typeof Shell !== "undefined" && Shell.println(msg, "print"); }
+function info(msg) { if(typeof console === "object" && console.info) console.info(msg); }
 
 var eyeBoard=new Board();
 
@@ -337,7 +338,7 @@ function getCoveredEyes() {
 	walker(same4,goboard,null,more)
 	return ra.map(function(item) { if (item[0]) return item[1][0];  }).filter(function(item) {return item});
 }
-// inefficient and wrong (ignores eyes instead of counting them 
+// inefficient and wrong (ignores eyes instead of counting them).
 // GO.getFinalScore = function() { var score = 0; for(var r=0; r<kBoardSize; r += 1) for(var c=0; c<kBoardSize; c += 1) checkEyes(r,c,WHITE) - checkEyes(r,c,BLACK); }
 
 /*
@@ -364,6 +365,32 @@ function getCoveredEyes() {
  * 		return {group, border}
  * 
  */
+function getControlledBy(r, c) { var color = goboard[r][c];  if (color == BLANK) color = getBorder(r,c); if (color == BLACK) return -1; if (color == WHITE) return 1; return 0; }
+function getBorder(r,c) { var res = same4(r,c); if (res[0]) return res[1][0]; return BLANK;}
+
+function visit(r,c,p) { var seen=visit.seen=visit.seen||{}, cnt=visit.cnt=visit.cnt||{}; var here = r + ":" + c; if (!seen[here]) { var clr=getColor(r,c); cnt[clr]=1+(cnt[clr]||0); seen[here]=clr; if (p && clr === p) { get4dir(r,c,visit,p); }} return cnt; }
+visit.reset = function() { visit.seen = {}; visit.cnt = {} }
+visit.start = function (r,c,p) { visit.reset(); return visit(r,c, p || getColor(r,c)); }
+visity.classify = function(r,c) { 
+	var p = getColor(r,c), v = visit.start(r,c,p);
+	var score = v[p];
+	return {color:p, score:score};
+}
+// Array.isArray.toString().replace(/\s+/g, "") === "functionisArray(){[nativecode]}"
+if (typeof Array.isArray === "undefined") Array.isArray = function isArray(ra) { return !!(ra && typeof ra.length == "number" && typeof ra.join === "function" && ra.constructor === Array); }
+
+// function classify(group) { return "unknown"; }
+/* Might double count some elements */
+function classify(group, state) { state = state || {}; for(var i=0, len=group && group.length; i<len; i += 1) { var here=group[i]; if (Array.isArray(here)) classify(here,state); else state[here] = 1 + (state[here]||0); } return state;}
+
+function Group(r,c) { var p = getColor(r,c); this.color = p; this.gnum = Group.count = 1 + (Group.count||0); this.already = alreadyGrouped(r,c,p); if (!this.already) { this.group = get4dir(r,c,groupify,p); this.state = classify(this.group); }}
+
+function alreadyGrouped(r,c,p) { var board = Group.board = Group.board || new Board();  if (!board[r]) return true; if (board[r][c] !== BLANK) return true; board[r][c] = p + Group.count; return false;}
+
+function groupify(r,c,p) { var res = goboard[r] && goboard[r][c]; if (res == p && !alreadyGrouped(r,c,p)) { log(r,c,p); return get4dir(r,c,groupify,p);} return res}
+
+// function groupify(r,c,p) { var res = goboard[r] && goboard[r][c]; if (res == p && !alreadyGrouped(r,c,p)) { console.log(r,c,p); return get4dir(r,c,groupify,p);} return res && res+":"+r + ":" + c}
+// function classify(group, state) { state = state || {}; for(var i=0, len=group && group.length; i<len; i += 1) { var here=group[i]; if (Array.isArray(here)) classify(here,state); else {state[here] = 1 + (state[here]||0); if (here && state[here] === 1) {var h = here.charAt(0); state[h] = 1 + (state[h] || 0);} } } return state;}
 
 /** Record Moves */
 function Recorder(elem,header,displayFnc) {
@@ -387,3 +414,5 @@ GO.getRecorder = function getRecorder() {
 	if (!GO.recorder) GO.recorder = new Recorder(document.getElementById('displayMoves'), '');
 	return GO.recorder;
 }
+
+if (typeof module === "object" && module.exports) module.exports = GO;
