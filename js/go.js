@@ -368,11 +368,13 @@ function getCoveredEyes() {
 function getControlledBy(r, c) { var color = goboard[r][c];  if (color == BLANK) color = getBorder(r,c); if (color == BLACK) return -1; if (color == WHITE) return 1; return 0; }
 function getBorder(r,c) { var res = same4(r,c); if (res[0]) return res[1][0]; return BLANK;}
 
-function visit(r,c,p) { var seen=visit.seen=visit.seen||{}, cnt=visit.cnt=visit.cnt||{}; var here = r + ":" + c; if (!seen[here]) { var clr=getColor(r,c); cnt[clr]=1+(cnt[clr]||0); seen[here]=clr; if (p && clr === p) { get4dir(r,c,visit,p); }} return cnt; }
-visit.reset = function() { visit.seen = {}; visit.cnt = {} }
+function visit(r,c,p) { if (!visit.cached) visit.reset(); var seen=visit.seen, cnt=visit.cnt; var here = r + ":" + c; if (!seen[here]) { var clr=getColor(r,c); cnt[clr]=1+(cnt[clr]||0); seen[here]=clr; if (p && clr === p) { visit.cached[here]=cnt; get4dir(r,c,visit,p); }} return cnt; }
+visit.reset = function() { visit.seen = {}; visit.cnt = {}; visit.cached = visit.cached || {}; }
+visit.reset();
 visit.start = function (r,c,p) { visit.reset(); return visit(r,c, p || getColor(r,c)); }
-visit.classify = function(r,c) { 
-	var p = getColor(r,c), v = visit.start(r,c,p);
+visit.classify = function(r,c,v) { 
+	var p = getColor(r,c);
+	v = v || visit.start(r,c,p);
 	var score = v[p];
 	var liberties = v[BLANK];
 	var isMixed = v[WHITE] && v[BLACK];
