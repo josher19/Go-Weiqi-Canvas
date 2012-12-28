@@ -87,6 +87,26 @@ function goOnClick(e) {
 
 }
 
+function numeric(x) { return typeof x === "number" }
+
+function rndMove(cb) {
+	var r=rndItem(), cols=goboard[r].map(function(it,n) { return it==BLANK && n }).filter(numeric); 
+	var c=cols[rndItem(cols.length)] || 0;
+	var cc = new Cell( r, c, curPlayer.color);
+	var moved = addPiece(cc, curPlayer.color);
+	if (cb) cb(cc, moved);
+	return moved;
+}
+
+function rndBoard(size) { 
+	if (null == size) size = kBoardSize*(kBoardSize-2);
+	if ("undefined" === typeof curPlayer) curPlayer = players[gMoveCount % 2];
+	var _info = info; info = function() {}; 
+	for(var sum=0, i=0; i < size; i += 1) sum += rndMove(); 
+	info=_info; 
+	return sum/size; 
+}
+
 function isOccupied(cell) {
   for (var i = 0; i < gPieces.length; i++) {
 	if ((gPieces[i].row == cell.row) && 
@@ -163,7 +183,7 @@ function isBlack(piece) {
 function initForm(frm) {
 	if (frm.confirm) frm.confirm.onclick = function(ev) {gPassedCount = 0;}
 	if (frm.pass) frm.pass.onclick = function(ev) {++gPassedCount;info("pass");nextPlayer();}
-	if (frm.resign) frm.resign.onclick = function(ev) {gResigned = true}
+	if (frm.resign) frm.resign.onclick = function(ev) {gResigned = true; GO.showFinalVictor(); }
 }
 
 // draw board
@@ -246,6 +266,7 @@ function endGame() {
     gGameInProgress = false;
     info("The game is over"); // should display prominently, disable parts of UI
     if (initGame.frm && initGame.frm.boardSize) initGame.frm.boardSize.disabled = false;
+    GO.showFinalVictor();
     // initGame.restart();
 }
 

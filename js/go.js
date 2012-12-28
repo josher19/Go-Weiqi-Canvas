@@ -16,8 +16,10 @@ function Board() {
             goboard[rows][cols] = BLANK;
         }
     }
+    goboard.getColor =  function (r, c) { return this[r] && this[r][c]; }
     return goboard;
 }
+
 
 /** resize board to boardsize, optionally copying pieces from goboard */
 function reBoard(boardsize, goboard) {
@@ -41,7 +43,7 @@ goboard = new Board();
 
 function Player(color) {
 	this.color = color;
-	this.captured = 0;
+	this.captured = 0; // should record this for Japanese Scoring
 }
 
 var blackPlayer = new Player(BLACK),
@@ -283,7 +285,7 @@ function countCaptures(r,c,p) { return doCheckDead(r,c,p) && zap(r,c,p); }
 
 function checkEyes(r, c, p) { return doCheckAlive(r, c, p) || zap(r, c, p); }
 
-function rndItem() { return Math.floor(Math.random() * kBoardSize); }
+function rndItem(len) { return Math.floor(Math.random() * (len || kBoardSize)); }
 
 function checkRandom() { var r = rndItem(), c = rndItem(); return [r, c, goboard[r][c], checkEyes(r, c)]; }
 
@@ -368,8 +370,8 @@ function getCoveredEyes() {
 function getControlledBy(r, c) { var color = goboard[r][c];  if (color == BLANK) color = getBorder(r,c); if (color == BLACK) return -1; if (color == WHITE) return 1; return 0; }
 function getBorder(r,c) { var res = same4(r,c); if (res[0]) return res[1][0]; return BLANK;}
 
-function visit(r,c,p) { if (!visit.cached) visit.reset(); var seen=visit.seen, cnt=visit.cnt; var here = r + ":" + c; if (!seen[here]) { var clr=getColor(r,c); cnt[clr]=1+(cnt[clr]||0); seen[here]=clr; if (p && clr === p) { visit.cached[here]=cnt; get4dir(r,c,visit,p); }} return cnt; }
-visit.reset = function() { visit.seen = {}; visit.cnt = {}; visit.cached = visit.cached || {}; }
+function visit(r,c,p) { if (!visit.seen) visit.reset(); var seen=visit.seen, cnt=visit.cnt; var here = r + ":" + c; if (!seen[here]) { var clr=getColor(r,c); cnt[clr]=1+(cnt[clr]||0); seen[here]=clr; if (p && clr === p) { if (visit.cached) visit.cached[here]=cnt; get4dir(r,c,visit,p); }} return cnt; }
+visit.reset = function(recache) { visit.seen = {}; visit.cnt = {}; if (recache) visit.cached = {}; }
 visit.reset();
 visit.start = function (r,c,p) { visit.reset(); return visit(r,c, p || getColor(r,c)); }
 visit.classify = function(r,c,v) { 
@@ -382,7 +384,23 @@ visit.classify = function(r,c,v) {
 	
 	return {color:p, score:score, liberties: liberties, mixed:!!isMixed, control:cc};
 }
-visit.score = function (r,c) { var dd; if (typeof r=="object") dd = r; else dd = visit.classify(r,c); if (dd.color==BLANK || dd.color == dd.control || dd.liberties == 1) return [dd.control, dd.score]; return [dd.color, dd.score]; d}
+/** returns [Player ("b" for Black, "w" for White, or "_" for Blank), size of stone group] */
+visit.score = function (r,c) { var dd; if (typeof r=="object") dd = r; else dd = visit.classify(r,c); if (dd.color==BLANK) return [dd.control, dd.score]; if (dd.liberties == 1)  return [otherPlayer(dd.color), dd.score]; return [dd.color, dd.score]; }
+
+/** might need to do a 2nd pass to get rid of deleted pieces (liberties == 1), confirm score */
+function getFinalScore() { var scored={}; scored[BLACK]=scored[WHITE]=0; tstart = new Date(); visit.reset(); walker(visit.score, goboard, null, function(r) { scored[r[0]] = 1 + (scored[r[0]]||0) }); scored.endTime = tstart; scored.ms = new Date() - tstart; return scored }
+
+GO.getFinalScore = function() { var score = getFinalScore(); return [ score[WHITE] - score[BLACK], (1 - (score[BLANK] || 0) / kBoardSize/kBoardSize), score[BLANK] || 0 ] }
+
+GO.showFinalVictor = function(score, victor) {
+	if (null == score) score = this.getFinalScore();
+	victor = victor || document.getElementById("victor") || (function() { var v = document.createElement('div'); v.id = "victor"; document.body.appendChild(v); return v; })()
+	victor.innerHTML = ['<span id="score">' , score[0] , '</span>', '<span id="winner">', score[0] < 0 ? "Black" : "White", '</span>', '<progress id=done title="percentage complete ', (score[1]*100).toFixed(2), '% (', score[2], ')', '" value=', score[1], ' >', score[1], '</progress>'].join(" ")
+	return victor;
+}
+
+/* by group .. not needed ? */
+
 // Array.isArray.toString().replace(/\s+/g, "") === "functionisArray(){[nativecode]}"
 if (typeof Array.isArray === "undefined") Array.isArray = function isArray(ra) { return !!(ra && typeof ra.length == "number" && typeof ra.join === "function" && ra.constructor === Array); }
 
@@ -421,5 +439,7 @@ GO.getRecorder = function getRecorder() {
 	if (!GO.recorder) GO.recorder = new Recorder(document.getElementById('displayMoves'), '');
 	return GO.recorder;
 }
+
+GO.save = function() { return GO.saved = {gPieces:gPieces.slice(),hist:GO.getRecorder().hist.slice()} }
 
 if (typeof module === "object" && module.exports) module.exports = GO;
