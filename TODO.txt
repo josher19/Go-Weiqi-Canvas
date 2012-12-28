@@ -1,0 +1,120 @@
+BASIC FEATURES
+--------------
+
+Simple Javascript representation of a Go board:
+	Started: go.js
+	Simplify Code
+	Wrap in a Go object or JS class
+		Depends on:
+			Recode in CoffeScript ??
+				or
+			Code for Node ??
+				or
+			Both: Node and CoffeeScript (Zappa)
+	Use Array (or set) generator/consumer instead of recursion:
+		Add Tests
+		go.js:
+			 @checkNonRec(r,c,p)
+				vs.
+			 @checkRec(r, c, p, fcn)
+		May need to add to Array.prototype for IE:
+			@indexOf
+			@filter
+			@map
+			@reduce
+
+Represent Go Game:
+	Objects:
+		Two active players: White and Black
+		stones: White and Black
+		Board Size: 
+			5x5: DONE
+			9x9: DONE
+			13x13: DONE
+			19x19: DONE
+	Legal Moves
+		Surrounded stones
+		Captured stones
+			@zap(row,col)
+			@moveAndCapture(cell): deleted
+			@findCaptures(r, c, p) and @canCapture(r,c,p)
+		Eyes & Covered Eyes
+		Cannot capture own stones (illegal move)
+			DONE
+		Pass
+		End game: both players Pass.
+			SOON
+	Go Terms (optional):
+		Chains:  two or more stones of the same color that are placed next to each other (non-diagonally).
+		Liberties: empty space next to a Chain.
+		Eyes: empty spaces (BLANKs) inside a group of stones.
+		Living stones: group that cannot be killed (two or more eyes).
+		Go capture: play go until first stone is captured.
+	More Advanced:
+		Winning & Quiting
+		Ko: cannot make a capture that brings the board right back to where it was before.
+		Handicap Stones
+		Scoring
+			Chinese: number of living stones + eyes
+			Japanese: number of captured stones + territory
+		Komi: bonus points
+			White player given 6.5 points of Komi since goes second
+		Time Limits ??
+
+Display Game:
+	Forms for user input:
+		Player:
+			User Name
+			Color (Black or White): go.html
+			Skill Level??
+		Chat
+		Quit Button
+		Timer??
+	Canvas Tag for Displaying Go Game: gocanvas.js, go.html
+		Click to place stone
+		Confirm button needed ??
+		Use excanvas for IE7 : js/excanvas.min.js
+		Fallback to HTML or use browser upgrade message/link to IE9 ??
+		Grid Lines: 
+			Middle line instead of border lines
+				Click on crossroads instead of center of square
+
+	Resources:
+		Go Tutorial: http://www.gokgs.com/tutorial/index.jsp
+		SGF Spec: http://www.red-bean.com/sgf/go.html
+			Black or White [posx, posy]: ;B[a-ta-t];W[a-ta-t]
+			Example: 9x9 Go Board with 2 point handicap and two moves
+			(;GM[1]FF[4]SZ[9]HA[2]AB[fd][df];W[dd];B[ff] ...)
+
+ADVANCED FEATURES
+--------------
+
+Go Game Server:
+	Separate Project
+	Use Zappa or other framework
+	Two players (default)
+	Options/Advanced:
+		Viewers for public games 
+		Multiple games per server 
+		Use online Go standards to make interoperable ??
+
+AI:
+	Making a computer be a really good Go player is
+	known as a Hard Problem in Artificial Intelligence circles.
+	Much more difficult than Chess because so many more positions
+	Probably requires specific and general pattern recognition
+	Look at:
+		Surreal Numbers
+		Neural Nets
+		Fuzzy Logic
+		Pattern Recognition
+		Visual/2d Pattern Recognition
+	Look for expert help:
+		Expert AI Programmers
+		Go Masters
+
+Mobile Version:
+	Wrap in WebView
+	Gestures & buttons
+		Easily Zoom in & Out
+		See see last move

@@ -1,0 +1,11 @@
+_,_,b,b,b,b,b,w,_
+b,_,b,_,b,w,b,w,w
+w,b,b,b,w,w,w,w,_
+w,w,w,w,b,b,w,w,_
+w,w,w,b,b,_,b,w,w
+w,b,b,b,_,_,b,w,w
+w,w,b,_,b,b,b,b,w
+w,_,w,b,b,_,_,b,b
+_,w,w,w,b,_,b,b,_
+
+getScore()

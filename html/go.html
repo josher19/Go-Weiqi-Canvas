@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+        go.html
+        
+        Copyright 2011 by Joshua S. Weinstein
+        http://josher19.github.com/Go-Weiqi-Canvas/
+        
+		License: http://creativecommons.org/licenses/by/3.0/
+		
+-->
+	<title>Go Game</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" href="../css/go.css" type="text/css" />
+	
+	<!--[if lt IE 9]>
+	<script src=js/excanvas.min.js></script>
+	<![endif]-->
+	<script type="text/javascript" src="../js/go.js"></script>
+	<script type="text/javascript" src="../js/gocanvas.js"></script>
+</head>
+
+<body>
+
+<canvas height="451" width="451" id="gocanvas"></canvas>
+<p style="margin-top: 0pt; font-style: normal;" class="legend">Moves: <span id="movecount">0</span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="warnings"></span></p>
+
+<FORM id="go" name="go">
+<FIELDSET>
+<LEGEND ACCESSKEY=A>Actions:</LEGEND>
+<input type="button" name="confirm" value="Confirm" />
+<input type="button" name="pass" value="Pass" />
+<input type="button" name="resign" value="Resign" />
+</FIELDSET>
+<FIELDSET>
+<LEGEND ACCESSKEY=P>Next Player:</LEGEND>
+<input type="radio" name="player" value="w" id="white" onclick="return false" /><label for="white" class="whiteLabel">White</label>
+<input type="radio" name="player" value="b" id="black" onclick="return false" /><label for="black" class="blackLabel">Black</label>
+</FIELDSET>
+<br />
+<label>Show SGF logs: <input type="checkbox" title="show SGF logs" name="enableLogs" id="enableLogs"  /></label>
+<div id="displayMoves" style="display:none"></div>
+<label>Size of Board:
+	<select name=boardSize>
+		<option>5</option>
+		<option selected="selected">9</option>
+		<option>13</option>
+		<option>19</option>
+	</select></label>
+</FORM>
+
+<script>
+  initGame(document.getElementById('gocanvas'), document.getElementById('movecount'), document.forms.go);
+  document.forms.go.enableLogs.onclick = function(ev) {
+	 var dm=document.getElementById('displayMoves'); 
+	 if (dm) dm.style.display = this.checked ? '' : 'none';
+  }
+</script>
+
+</body>
+</html>
