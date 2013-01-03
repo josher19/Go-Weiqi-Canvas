@@ -184,6 +184,8 @@ function initForm(frm) {
 	if (frm.confirm) frm.confirm.onclick = function(ev) {gPassedCount = 0;}
 	if (frm.pass) frm.pass.onclick = function(ev) {++gPassedCount;info("pass");nextPlayer();}
 	if (frm.resign) frm.resign.onclick = function(ev) {gResigned = true; GO.showFinalVictor(); }
+	if (frm.rndBoardBtn) frm.rndBoardBtn.onclick = function(ev) { rndBoard(); }
+	if (frm.rndMoveBtn) frm.rndMoveBtn.onclick = function(ev) { rndMove(); }
 }
 
 // draw board
